@@ -1,0 +1,7 @@
+{
+  "musicPlayer": {
+    "state": "stop",
+    "currentTrack": 0,
+    "trackList": ["Noisestorm - Crab Rave"]
+  }
+}
