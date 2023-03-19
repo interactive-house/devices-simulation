@@ -24,34 +24,47 @@ def streamHandler(message):
     print(message["path"])
     print(message["data"])
 
-def main():
-    choice = ''
-    os.system('clear')
 
-    validFields = ['state', 'currentTrack']
-    while(choice != 'q'):
-        
-        choice = input('Update a field with syntax: <field> <data>\n')
+class TestClient:
 
-        if(choice == 'q'):
-          print("Client Exiting")
-          continue
+  def __init__(self):
+    firebase = pyrebase.initialize_app(config)
+    self.db = firebase.database()
+    terminalClient = threading.Thread(target=self.inputLoop)
+    terminalClient.daemon = True
+    terminalClient.start()
 
-        params = choice.split(' ')
-        
-        if(len(params) != 2):
-           print('Invalid input')
-           continue
+  def inputLoop(self):
+      choice = ''
+      os.system('clear')
 
-        
-        field = params[0]
-        data = params[1]
+      validFields = ['state', 'currentTrack']
+      while(choice != 'q'):
+          
+          choice = input('Update a field with syntax: <field> <data>\n')
 
-        if(field in validFields):
-            db.child('musicPlayer').update({f"{field}": f"{data}"})
-        elif(choice == 'q'):
+          if(choice == 'q'):
+            print("Client Exiting")
             continue
-        else: print('Invalid field entered')
+
+          params = choice.split(' ')
+          
+          if(len(params) != 2):
+            print('Invalid input')
+            continue
+
+          
+          field = params[0]
+          data = params[1]
+
+          if(field in validFields):
+              self.db.child('musicPlayer').update({f"{field}": f"{data}"})
+          elif(choice == 'q'):
+              continue
+          else: print('Invalid field entered')
+
+def main():
+   client = TestClient()
 
 if __name__ == "__main__":
     main()
