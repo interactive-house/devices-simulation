@@ -1,11 +1,9 @@
 from threading import Thread
-import testClient
-import testServer
+from Server import MusicPlayerClient
+from Server import TestClient
 
-client = Thread(target=testClient.main)
-client.start()
-server = Thread(target=testServer.main)
-server.start()
+player = MusicPlayerClient()
+client = TestClient()
 
 
 
