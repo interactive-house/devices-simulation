@@ -1,2 +1,4 @@
-/config
-/.venv
+config
+.venv
+__pycache__
+*.pyc
