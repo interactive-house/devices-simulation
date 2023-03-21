@@ -1,3 +1,4 @@
 # Firebase
 pyrebase4
 firebase_admin
+pygame

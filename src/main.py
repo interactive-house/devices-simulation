@@ -9,7 +9,7 @@ def main():
       "authDomain": "test-realtime-8f213.firebaseapp.com",
       "databaseURL": "https://test-realtime-8f213-default-rtdb.europe-west1.firebasedatabase.app",
       "storageBucket": "test-realtime-8f213.appspot.com",
-      "serviceAccount": "../config/ServiceAccount.json"
+      "serviceAccount": "./config/ServiceAccount.json"
   }
 
   firebase = pyrebase.initialize_app(config)
