@@ -1,7 +1,11 @@
 {
-  "musicPlayer": {
-    "state": "stop",
-    "currentTrack": 0,
-    "trackList": ["Noisestorm - Crab Rave"]
+  "simulatedDevices": {
+    "deviceStatus": "offline",
+    "action": {
+      "id": "",
+      "type": "",
+      "track": ""
+    },
+    "songlist": []
   }
 }

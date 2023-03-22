@@ -1,5 +1,6 @@
 import os
 import pyrebase
+import uuid
 
 config = {
     "apiKey": "apiKey",
@@ -15,10 +16,10 @@ db = firebase.database()
 choice = ''
 os.system('clear')
 
-validFields = ['state', 'currentTrack']
+validFields = ['play', 'pause', 'stop', 'next', 'previous']
 while(choice != 'q'):
     
-    choice = input('Update a field with syntax: <field> <data>\n')
+    choice = input('Syntax: <action> <track>\n')
 
     if(choice == 'q'):
       print("Client Exiting")
@@ -26,15 +27,23 @@ while(choice != 'q'):
 
     params = choice.split(' ')
     
-    if(len(params) != 2):
-      print('Invalid input')
-      continue
+    if len(params) == 0:
+       print("Invlaid input")
+       continue
+    
+    action = params[0]
+    track = params[1] if len(params) > 1 else None
 
-    field = params[0]
-    data = params[1]
+    if(len(params) == 2):
+      track = params[1]
 
-    if(field in validFields):
-        db.child('musicPlayer').update({f"{field}": f"{data}"})
+    if(action in validFields):
+        data = {
+           "id": str(uuid.uuid4()),
+           "type": action,
+           "track": track
+        }
+        db.child('simulatedDevices').child('action').set(data)
     elif(choice == 'q'):
         continue
     else: print('Invalid field entered')

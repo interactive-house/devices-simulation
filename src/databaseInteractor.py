@@ -1,13 +1,14 @@
-# Takes a firebase database instance and music player to handle interactions
-# when updates occur
+from enum import Enum
 
 class DatabaseInteractor:
-    def __init__(self, database, player):
+    def __init__(self, database, player, tracklist: list):
         self.database = database
         self.player = player
+        self.tracklist = tracklist
+        self.setTracklist()
 
     # Starts observing a collection in the database for changes
-    def observe(self, collection):
+    def observe(self, collection: str):
       print(f"Observing {collection} collection for changes")
       self.database.child(collection).stream(self.onChange)
 
@@ -15,34 +16,39 @@ class DatabaseInteractor:
     # in the database. This will then call the MusicPlayer instance methods
     # depending on what data has changed.
     def onChange(self, message):
-        
+        print(message)
         # Check if the event type is patch, which is an update
-        if(message["event"] == "patch"):
+        if(message["path"] == "/action"):
             
             # Get the updated field and value
-            field = list(message["data"].keys())[0]
-            value = message["data"][field]
+            data = message["data"]
+            dataKeys = list(data.keys())
+            type = str(data["type"]).lower() if 'type' in dataKeys else None
+            track = str(data['track']).lower() if 'track' in dataKeys else None
 
-            # Handle the different field updates
-            match field:
-                case "state":
-                    self.handleStateChange(value)
-                    
-                case "currentTrack":
-                    self.handleTrackChange(value)
+            match type:
+                case 'play':
+                    self.player.play(track)
+                case 'pause':
+                    self.player.pause()
+                case 'stop':
+                    self.player.stop()
+                case 'next':
+                    self.player.next()
+                case 'previous':
+                    self.player.previous()
 
-    # Method to call the various state change methods in the music player
-    def handleStateChange(self, value):
-        if(value == "playing"):
-            self.player.play()
-        if(value == "stopped"):
-            self.player.stop()
-        if(value == "paused"):
-            self.player.pause()
+    def setTracklist(self):
+        self.database.child("simulatedDevices").child("songList").set(list(self.tracklist.keys()))
 
-    # Method to call the track change method in the music player
-    def handleTrackChange(self, track):
-        self.player.changeTrack(track)
+class Action(Enum):
+    PLAY = "play"
+    PAUSE = "pause"
+    STOP = "stop"
+    NEXT = "next"
+    PREVIOUS = "previous"
+
+
 
 
 

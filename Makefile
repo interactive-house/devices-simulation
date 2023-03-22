@@ -1,9 +1,9 @@
 #!/usr/bin/env make
 
 # Change this to be your variant of the python command
-PYTHON = python3
+# PYTHON = python3
 # PYTHON = python
-# PYTHON = py
+PYTHON = py
 
 all:
 
@@ -21,6 +21,12 @@ install:
 
 installed:
 	$(PYTHON) -m pip list
+
+run-player:
+	$(PYTHON) src/main.py
+
+run-client:
+	$(PYTHON) src/testClient.py
 
 clean:
 	rm -f .coverage *.pyc

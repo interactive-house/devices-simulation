@@ -1,28 +1,38 @@
 import pyrebase
-from musicPlayer import MusicPlayer
+import os
 from databaseInteractor import DatabaseInteractor
+from musicPlayer import MusicPlayer
 
 def main():
+  try:
+    config = {
+        "apiKey": "apiKey",
+        "authDomain": "test-realtime-8f213.firebaseapp.com",
+        "databaseURL": "https://test-realtime-8f213-default-rtdb.europe-west1.firebasedatabase.app",
+        "storageBucket": "test-realtime-8f213.appspot.com",
+        "serviceAccount": "./config/ServiceAccount.json"
+    }
+
+    firebase = pyrebase.initialize_app(config)
+
+    database = firebase.database()
     
-  config = {
-      "apiKey": "apiKey",
-      "authDomain": "test-realtime-8f213.firebaseapp.com",
-      "databaseURL": "https://test-realtime-8f213-default-rtdb.europe-west1.firebasedatabase.app",
-      "storageBucket": "test-realtime-8f213.appspot.com",
-      "serviceAccount": "./config/ServiceAccount.json"
-  }
+    # Create a dict with the song name without the file extension
+    # as key, and full file path as value.
+    tracklist: dict = {}
+    for file in os.listdir('music'):
+      if file.endswith(".mp3"):
+          niceName = file.split(".")[0]
+          tracklist[niceName] = file
 
-  firebase = pyrebase.initialize_app(config)
+    player = MusicPlayer(tracklist)
 
-  database = firebase.database()
-    
-  musicPlayer = MusicPlayer()
+    interactor = DatabaseInteractor(database, player, tracklist)
 
-  interactor = DatabaseInteractor(database, musicPlayer)
+    interactor.observe("simulatedDevices") # Runs in another thread
 
-  interactor.observe("musicPlayer") # Runs in another thread
-
+  except Exception as error:
+     print(error)
+     
 if __name__ == "__main__":
     main()
-
-
