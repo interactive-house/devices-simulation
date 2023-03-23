@@ -23,24 +23,24 @@ class DatabaseInteractor:
             
             # Get the updated field and value
             data = message["data"]
-            dataKeys = list(data.keys())
-            type = data["type"] if 'type' in dataKeys else None
-            track = data['track'] if 'track' in dataKeys else None
+            dataKeys = data.keys()
+            type = data["type"] if "type" in dataKeys else None
+            trackId = data["trackId"] if "trackId" in dataKeys else None
 
             match type:
                 case Action.PLAY.value:
-                    self.player.play(track)
+                    self.player.play(trackId)
                 case Action.PAUSE.value:
                     self.player.pause()
                 case Action.STOP.value:
                     self.player.stop()
                 case Action.NEXT.value:
                     self.player.next()
-                case Action.PREVIOUS.value:
-                    self.player.previous()
+                case Action.PREV.value:
+                    self.player.prev()
 
     def setTracklist(self):
-        self.database.child("simulatedDevices").child("songList").set(list(self.tracklist.keys()))
+        self.database.child("simulatedDevices").child("songList").set(self.tracklist)
 
     def updateDeviceStatus(self):
         self.database.child("simulatedDevices").child("deviceStatus").set("online")
@@ -50,7 +50,7 @@ class Action(Enum):
     PAUSE = "pause"
     STOP = "stop"
     NEXT = "next"
-    PREVIOUS = "prev"
+    PREV = "prev"
 
 
 

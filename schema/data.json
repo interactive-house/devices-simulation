@@ -4,8 +4,19 @@
     "action": {
       "id": "",
       "type": "",
-      "track": ""
+      "trackId": ""
     },
-    "songlist": []
+    "songList": [
+      {
+        "trackId": "1276217649743",
+        "artist": "An artist name",
+        "song": "A song title"
+      },
+      {
+        "trackId": "764982873743",
+        "artist": "Another artist name",
+        "song": "another song title"
+      }
+    ]
   }
 }

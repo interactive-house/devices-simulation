@@ -13,13 +13,18 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
+music = db.child("simulatedDevices").child("songList").get().val()
+trackIds = []
+for track in music:
+    trackIds.append(track["trackId"])
+
 choice = ''
 os.system('clear')
 
 validFields = ['play', 'pause', 'stop', 'next', 'prev']
 while(choice != 'q'):
-    
-    choice = input('Syntax: <action>-<artist>-<song>\n')
+
+    choice = input('Syntax: <action> or <action>-<trackId>\n')
 
     if(choice == 'q'):
       print("Client Exiting")
@@ -28,21 +33,26 @@ while(choice != 'q'):
     params = choice.split('-')
     totalParams = len(params)
     
-    if totalParams not in (1, 3):
+    if totalParams not in (1, 2):
        print("Invlaid input")
        continue
     
     action = params[0]
-    track = None
+    trackId = None
 
-    if totalParams == 3:
-        track = f"{params[1]} - {params[2]}"
+    if totalParams == 2:
+        index = int(params[1])
+        if index < len(trackIds):
+            trackId = trackIds[index]
+        else:
+            print("Not a valid song index")
+            continue
 
     if(action in validFields):
         data = {
            "id": str(uuid.uuid4()),
            "type": action,
-           "track": track
+           "trackId": trackId
         }
         db.child('simulatedDevices').child('action').set(data)
     elif(choice == 'q'):
