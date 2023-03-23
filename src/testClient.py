@@ -19,29 +19,32 @@ os.system('clear')
 validFields = ['play', 'pause', 'stop', 'next', 'previous']
 while(choice != 'q'):
     
-    choice = input('Syntax: <action> <track>\n')
+    choice = input('Syntax: <action>-<artist>-<song>\n')
 
     if(choice == 'q'):
       print("Client Exiting")
       continue
 
-    params = choice.split(' ')
+    params = choice.split('-')
     
     if len(params) == 0:
        print("Invlaid input")
        continue
     
     action = params[0]
-    track = params[1] if len(params) > 1 else None
 
-    if(len(params) == 2):
-      track = params[1]
+    if(len(params) == 3):
+      artist = params[1]
+      song = params[2]
+    else:
+       print("You must enter an artist and song")
+       continue
 
     if(action in validFields):
         data = {
            "id": str(uuid.uuid4()),
            "type": action,
-           "track": track
+           "track": f"{artist} - {song}"
         }
         db.child('simulatedDevices').child('action').set(data)
     elif(choice == 'q'):

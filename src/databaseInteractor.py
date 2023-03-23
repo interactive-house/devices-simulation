@@ -6,6 +6,7 @@ class DatabaseInteractor:
         self.player = player
         self.tracklist = tracklist
         self.setTracklist()
+        self.updateDeviceStatus()
 
     # Starts observing a collection in the database for changes
     def observe(self, collection: str):
@@ -23,8 +24,8 @@ class DatabaseInteractor:
             # Get the updated field and value
             data = message["data"]
             dataKeys = list(data.keys())
-            type = str(data["type"]).lower() if 'type' in dataKeys else None
-            track = str(data['track']).lower() if 'track' in dataKeys else None
+            type = data["type"] if 'type' in dataKeys else None
+            track = data['track'] if 'track' in dataKeys else None
 
             match type:
                 case 'play':
@@ -40,6 +41,9 @@ class DatabaseInteractor:
 
     def setTracklist(self):
         self.database.child("simulatedDevices").child("songList").set(list(self.tracklist.keys()))
+
+    def updateDeviceStatus(self):
+        self.database.child("simulatedDevices").child("deviceStatus").set("online")
 
 class Action(Enum):
     PLAY = "play"

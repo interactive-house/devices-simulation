@@ -11,12 +11,12 @@ class MusicPlayer():
         self.setPlayerTracklist(tracklist)
 
     def play(self, track):
-        # If a track is passed in, the index of the track is retrieved from the
-        # tracklist dict and used to play the corresponding track in the MediaList.
+        # If a track is passed in, the index of the track is retrieved from the tracklist 
+        # dict and used to play the corresponding track at that index in the MediaList.
         if track:
             trackIndex = None
             for i, key in enumerate(self.tracklist.keys()):
-                if key == track:
+                if str(key).lower() == str(track).lower():
                     trackIndex = i
             self.player.play_item_at_index(trackIndex)
         # If track is None and there is no current track loaded, the first track
@@ -27,9 +27,12 @@ class MusicPlayer():
         else:
             self.player.play()
 
+    # Pause playback of current track, nothing happens if no loaded track is playing.
     def pause(self):
         self.player.pause()
 
+    # Stop playback of current track, This will also move the progress of the currently
+    # loaded song back to the start. Nothing happens if no song is loaded or playing.
     def stop(self):
         self.player.stop()
 
