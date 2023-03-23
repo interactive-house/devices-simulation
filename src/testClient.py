@@ -16,7 +16,7 @@ db = firebase.database()
 choice = ''
 os.system('clear')
 
-validFields = ['play', 'pause', 'stop', 'next', 'previous']
+validFields = ['play', 'pause', 'stop', 'next', 'prev']
 while(choice != 'q'):
     
     choice = input('Syntax: <action>-<artist>-<song>\n')
@@ -26,25 +26,23 @@ while(choice != 'q'):
       continue
 
     params = choice.split('-')
+    totalParams = len(params)
     
-    if len(params) == 0:
+    if totalParams not in (1, 3):
        print("Invlaid input")
        continue
     
     action = params[0]
+    track = None
 
-    if(len(params) == 3):
-      artist = params[1]
-      song = params[2]
-    else:
-       print("You must enter an artist and song")
-       continue
+    if totalParams == 3:
+        track = f"{params[1]} - {params[2]}"
 
     if(action in validFields):
         data = {
            "id": str(uuid.uuid4()),
            "type": action,
-           "track": f"{artist} - {song}"
+           "track": track
         }
         db.child('simulatedDevices').child('action').set(data)
     elif(choice == 'q'):

@@ -28,15 +28,15 @@ class DatabaseInteractor:
             track = data['track'] if 'track' in dataKeys else None
 
             match type:
-                case 'play':
+                case Action.PLAY.value:
                     self.player.play(track)
-                case 'pause':
+                case Action.PAUSE.value:
                     self.player.pause()
-                case 'stop':
+                case Action.STOP.value:
                     self.player.stop()
-                case 'next':
+                case Action.NEXT.value:
                     self.player.next()
-                case 'previous':
+                case Action.PREVIOUS.value:
                     self.player.previous()
 
     def setTracklist(self):
@@ -50,7 +50,7 @@ class Action(Enum):
     PAUSE = "pause"
     STOP = "stop"
     NEXT = "next"
-    PREVIOUS = "previous"
+    PREVIOUS = "prev"
 
 
 

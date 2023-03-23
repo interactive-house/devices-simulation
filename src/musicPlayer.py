@@ -13,6 +13,7 @@ class MusicPlayer():
     def play(self, track):
         # If a track is passed in, the index of the track is retrieved from the tracklist 
         # dict and used to play the corresponding track at that index in the MediaList.
+        print(track)
         if track:
             trackIndex = None
             for i, key in enumerate(self.tracklist.keys()):

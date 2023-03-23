@@ -22,10 +22,10 @@ install:
 installed:
 	$(PYTHON) -m pip list
 
-run-player:
+player:
 	$(PYTHON) src/main.py
 
-run-client:
+client:
 	$(PYTHON) src/testClient.py
 
 clean:
