@@ -1,11 +1,12 @@
 from enum import Enum
+import os
+from uuid import uuid4
 
 class DatabaseInteractor:
-    def __init__(self, database, player, tracklist: list):
+    def __init__(self, database, player):
         self.database = database
         self.player = player
-        self.tracklist = tracklist
-        self.setTracklist()
+        self.syncSongLibrary()
         self.updateDeviceStatus()
 
     # Starts observing a collection in the database for changes
@@ -39,11 +40,56 @@ class DatabaseInteractor:
                 case Action.PREV.value:
                     self.player.prev()
 
-    def setTracklist(self):
-        self.database.child("simulatedDevices").child("songList").set(self.tracklist)
+    def syncSongLibrary(self):
+        localMusic = self.discoverLocalMusic()
+        databaseMusic = self.getDatabaseMusic()
+        songList = []
+        for localItem in localMusic:
+            isMatch = False
+            for dbItem in databaseMusic:
+                if dbItem["artist"] == localItem["artist"] and dbItem["song"] == localItem["song"]:
+                    isMatch = True
+                    break
+            if isMatch:
+                songList.append(dbItem)
+            else:
+                trackData = {
+                    **localItem,
+                    "trackId": str(uuid4())
+                }
+                songList.append(trackData)
+
+        self.database.child("simulatedDevices").child("songList").set(songList)
+        self.player.setTrackList(songList)
 
     def updateDeviceStatus(self):
         self.database.child("simulatedDevices").child("deviceStatus").set("online")
+
+    def discoverLocalMusic(self):
+        localMusic: list = []
+        for file in os.listdir('music'):
+            if file.endswith(".mp3"):
+                trackData = file.split(".")[0].split('-')
+                artist = trackData[0]
+                song = trackData[1]
+                data = {
+                    "artist": artist,
+                    "song": song
+                }
+                localMusic.append(data)
+        print("Local music")
+        print(localMusic)
+        return localMusic
+    
+    def getDatabaseMusic(self):
+        databaseMusic = self.database.child("simulatedDevices").child("songList").get().val()
+        print("Database music")
+        print(databaseMusic)
+        if type(databaseMusic) is list:
+            return databaseMusic
+        else:
+            return list()
+
 
 class Action(Enum):
     PLAY = "play"

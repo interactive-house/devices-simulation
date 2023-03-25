@@ -4,11 +4,10 @@ class MusicPlayer():
 
     musicDirectory = "music/"
 
-    def __init__(self, tracklist: list):
+    def __init__(self):
         self.instance = vlc.Instance()
         self.player: vlc.MediaListPlayer = self.instance.media_list_player_new()
-        self.tracklist: list = tracklist
-        self.setPlayerTracklist(tracklist)
+        self.tracklist: list = list()
 
     def play(self, trackId):
         # If a track is passed in, the index of the track is retrieved from the tracklist 
@@ -50,13 +49,13 @@ class MusicPlayer():
         if previousResult == -1:
             lastIndex = len(self.tracklist) - 1
             self.player.play_item_at_index(lastIndex)
-        
 
     # Creates vlc Media objects and adds them to a vlc MediaList. 
     # The created vlc MediaList is then assigned to the vlc MediaListPlayer.
-    def setPlayerTracklist(self, tracklist):
+    def setTrackList(self, syncedTrackList):
+        self.tracklist = syncedTrackList
         mediaList = self.instance.media_list_new()
-        for track in tracklist:
+        for track in self.tracklist:
             artist = str(track["artist"]).strip()
             song = str(track["song"]).strip()
             path = f"{self.musicDirectory}{artist} - {song}.mp3"
