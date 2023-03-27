@@ -1,0 +1,86 @@
+The player can be controlled by creating a new object value for the action field of the database schema.
+
+The schema structure is as follows:
+
+"simulatedDevices": {
+    "deviceStatus": "offline",
+    "action": {
+      "id": "",
+      "type": "",
+      "track": ""
+    },
+    "songlist": [
+      {
+        "artist": "Red hot chili peppers",
+        "song": "Scar tissue",
+        "trackId": "12345"
+      }
+    ]
+}
+
+########################################################################################
+
+To resume playing the current song or play the first song if no current song is loaded:
+
+data = {
+  "id": A generated UUID string
+  "type": "play"
+}
+
+db.child("simulatedDevices").child("action").set(data)
+
+########################################################################################
+
+To play a specific song:
+
+data = {
+  "id": A generated UUID string
+  "type": "play",
+  "trackId": "12345"
+}
+
+db.child("simulatedDevices").child("action").set(data)
+
+########################################################################################
+
+To Pause the current song:
+
+data = {
+  "id": A generated UUID string
+  "type": "pause"
+}
+
+db.child("simulatedDevices").child("action").set(data)
+
+########################################################################################
+
+To stop a song (Will return play state to beginning of the current song):
+
+data = {
+  "id": A generated UUID string
+  "type": "stop"
+}
+
+db.child("simulatedDevices").child("action").set(data)
+
+########################################################################################
+
+To skip to the next song:
+
+data = {
+  "id": A generated UUID string
+  "type": "next"
+}
+
+db.child("simulatedDevices").child("action").set(data)
+
+########################################################################################
+
+To go to the previous song:
+
+data = {
+  "id": A generated UUID string
+  "type": "prev"
+}
+
+db.child("simulatedDevices").child("action").set(data)
