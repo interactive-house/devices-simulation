@@ -1,3 +1,2 @@
-# Firebase
 pyrebase4
 python-vlc
