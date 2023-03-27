@@ -23,7 +23,7 @@ installed:
 	$(PYTHON) -m pip list
 
 player:
-	$(PYTHON) src/main.py
+	$(PYTHON) main.py
 
 client:
 	$(PYTHON) src/testClient.py
@@ -66,7 +66,7 @@ doc: pdoc pyreverse #pydoc sphinx
 
 pyreverse:
 	install -d doc/pyreverse
-	pyreverse *.py
+	pyreverse src/*.py
 	dot -Tpng classes.dot -o doc/pyreverse/classes.png
 	dot -Tpng packages.dot -o doc/pyreverse/packages.png
 	rm -f classes.dot packages.dot

@@ -1,9 +1,9 @@
 import pyrebase
-from databaseInteractor import DatabaseInteractor
-from musicPlayer import MusicPlayer
+from src.databaseInteractor import DatabaseInteractor
+from src.musicPlayer import MusicPlayer
 
 def main():
-  # try:
+  try:
     config = {
         "apiKey": "apiKey",
         "authDomain": "smarthome-3bb7b.firebaseapp.com",
@@ -23,8 +23,8 @@ def main():
 
     interactor.observe("simulatedDevices") # Runs in another thread
 
-  # except Exception as error:
-  #    print(error)
+  except Exception as error:
+     print(error)
      
 if __name__ == "__main__":
     main()
