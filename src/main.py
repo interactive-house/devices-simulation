@@ -2,13 +2,14 @@ import pyrebase
 from databaseInteractor import DatabaseInteractor
 from musicPlayer import MusicPlayer
 
+
 def main():
   # try:
     config = {
-        "apiKey": "apiKey",
-        "authDomain": "test-realtime-8f213.firebaseapp.com",
-        "databaseURL": "https://test-realtime-8f213-default-rtdb.europe-west1.firebasedatabase.app",
-        "storageBucket": "test-realtime-8f213.appspot.com",
+        "apiKey": "AIzaSyCOZcBxs3RkxuxDrf5vT2HwexFh3ZCw94c",
+        "authDomain": "smarthome-3bb7b.firebaseapp.com",
+        "projectId": "smarthome-3bb7b",
+        "storageBucket": "smarthome-3bb7b.appspot.com",
         "serviceAccount": "./config/ServiceAccount.json"
     }
 
@@ -20,10 +21,11 @@ def main():
 
     interactor = DatabaseInteractor(database, player)
 
-    interactor.observe("simulatedDevices") # Runs in another thread
+    interactor.observe("simulatedDevices")  # Runs in another thread
 
   # except Exception as error:
   #    print(error)
-     
+
+
 if __name__ == "__main__":
     main()
