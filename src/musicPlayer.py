@@ -1,4 +1,7 @@
 import vlc
+import os
+from mutagen.mp3 import MP3
+from mutagen.easyid3 import EasyID3 
 
 class MusicPlayer():
 
@@ -50,15 +53,18 @@ class MusicPlayer():
             lastIndex = len(self.tracklist) - 1
             self.player.play_item_at_index(lastIndex)
 
-    # Creates vlc Media objects and adds them to a vlc MediaList. 
+    # Creates vlc Media objects and adds them to a vlc MediaList.
     # The created vlc MediaList is then assigned to the vlc MediaListPlayer.
+    # Each track in the list is compared to what is stored locally in order to
+    # add them to the player at the correct index.
     def setTrackList(self, syncedTrackList):
         self.tracklist = syncedTrackList
         mediaList = self.instance.media_list_new()
         for track in self.tracklist:
-            artist = str(track["artist"]).strip()
-            song = str(track["song"]).strip()
-            path = f"{self.musicDirectory}{artist} - {song}.mp3"
-            media = self.instance.media_new(path)
-            mediaList.add_media(media)
+            for file in os.listdir(self.musicDirectory):
+                trackpath = f"{self.musicDirectory}{file}"
+                trackdata = MP3(trackpath, ID3=EasyID3)
+                if track["song"] == trackdata["title"] and track["artist"] == trackdata["artist"]:
+                    media = self.instance.media_new(trackpath)
+                    mediaList.add_media(media)
         self.player.set_media_list(mediaList)
