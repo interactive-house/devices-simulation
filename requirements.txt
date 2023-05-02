@@ -1,5 +1,2 @@
 pyrebase4
 python-vlc
-pylint
-pdoc
-graphviz

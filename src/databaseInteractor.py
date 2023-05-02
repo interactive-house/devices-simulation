@@ -1,6 +1,9 @@
 from enum import Enum
 import os
 from uuid import uuid4
+import mutagen
+from mutagen.mp3 import MP3  
+from mutagen.easyid3 import EasyID3 
 
 class DatabaseInteractor:
     def __init__(self, database, player):
@@ -11,6 +14,7 @@ class DatabaseInteractor:
 
     # Starts observing a collection in the database for changes
     def observe(self, collection: str):
+      os.system("clear")
       print(f"Observing {collection} collection for changes")
       self.database.child(collection).stream(self.onChange)
 
@@ -18,10 +22,10 @@ class DatabaseInteractor:
     # in the database. This will then call the MusicPlayer instance methods
     # depending on what data has changed.
     def onChange(self, message):
-        print(message)
+        
         # Check if the event type is patch, which is an update
         if(message["path"] == "/action"):
-            
+            print(message)
             # Get the updated field and value
             data = message["data"]
             dataKeys = data.keys()
@@ -69,26 +73,18 @@ class DatabaseInteractor:
         localMusic: list = []
         for file in os.listdir('music'):
             if file.endswith(".mp3"):
-                trackData = file.split(".")[0].split('-')
-                artist = trackData[0]
-                song = trackData[1]
+                trackpath = f"./music/{file}"
+                trackData = MP3(trackpath, ID3 = EasyID3)
                 data = {
-                    "artist": artist,
-                    "song": song
+                    "artist": trackData["artist"],
+                    "song": trackData["title"]
                 }
                 localMusic.append(data)
-        print("Local music")
-        print(localMusic)
         return localMusic
     
     def getDatabaseMusic(self):
         databaseMusic = self.database.child("simulatedDevices").child("songList").get().val()
-        print("Database music")
-        print(databaseMusic)
-        if type(databaseMusic) is list:
-            return databaseMusic
-        else:
-            return list()
+        return databaseMusic if type(databaseMusic) is list else list()
 
 
 class Action(Enum):

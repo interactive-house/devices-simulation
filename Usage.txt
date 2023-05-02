@@ -33,7 +33,7 @@ db.child("simulatedDevices").child("action").set(data)
 
 To play a specific song:
 
-data = {
+action: {
   "id": A generated UUID string
   "type": "play",
   "trackId": "12345"
