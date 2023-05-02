@@ -1,8 +1,12 @@
 import pyrebase
 from src.databaseInteractor import DatabaseInteractor
 from src.musicPlayer import MusicPlayer
+import traceback
+import signal
+import sys
 
 def main():
+
   try:
     config = {
         "apiKey": "apiKey",
@@ -21,10 +25,22 @@ def main():
 
     interactor = DatabaseInteractor(database, player)
 
-    interactor.observe("simulatedDevices") # Runs in another thread
+    dataStream = interactor.observe("simulatedDevices") # Runs in another thread
 
-  except Exception as error:
-     print(error)
+    def signal_handler(signal, frame):
+      print("signal handled")
+      interactor.updateDeviceStatus("offline")
+      dataStream.close()
+      sys.exit(1)
+      
+    signal.signal(signal.SIGINT, signal_handler)
+
+    # This is required so that the keyboard interrupt signal is caught by joining the
+    # thread with a timeout
+    dataStream.thread.join(5)
+
+  except Exception as e:
+     print(e)
      
 if __name__ == "__main__":
     main()

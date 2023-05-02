@@ -1,22 +1,21 @@
 from enum import Enum
 import os
+import signal
 from uuid import uuid4
-import mutagen
 from mutagen.mp3 import MP3  
-from mutagen.easyid3 import EasyID3 
+from mutagen.easyid3 import EasyID3
 
 class DatabaseInteractor:
     def __init__(self, database, player):
         self.database = database
         self.player = player
         self.syncSongLibrary()
-        self.updateDeviceStatus()
+        self.updateDeviceStatus("online")
 
     # Starts observing a collection in the database for changes
     def observe(self, collection: str):
-      os.system("clear")
       print(f"Observing {collection} collection for changes")
-      self.database.child(collection).stream(self.onChange)
+      return self.database.child(collection).stream(self.onChange)
 
     # onChange will handle responses from the stream when data is updated
     # in the database. This will then call the MusicPlayer instance methods
@@ -66,8 +65,8 @@ class DatabaseInteractor:
         self.database.child("simulatedDevices").child("songList").set(songList)
         self.player.setTrackList(songList)
 
-    def updateDeviceStatus(self):
-        self.database.child("simulatedDevices").child("deviceStatus").set("online")
+    def updateDeviceStatus(self, status):
+        self.database.child("simulatedDevices").child("deviceStatus").set(status)
 
     def discoverLocalMusic(self):
         localMusic: list = []
