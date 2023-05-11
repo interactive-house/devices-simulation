@@ -1,21 +1,26 @@
 from enum import Enum
 import os
-import signal
+import time
 from uuid import uuid4
 from mutagen.mp3 import MP3  
 from mutagen.easyid3 import EasyID3
+from .musicPlayer import MusicPlayer
+import vlc
 
 class DatabaseInteractor:
     def __init__(self, database, player):
         self.database = database
-        self.player = player
+        self.player: MusicPlayer = player
+        self.tracklist = []
         self.syncSongLibrary()
         self.updateDeviceStatus("online")
 
     # Starts observing a collection in the database for changes
     def observe(self, collection: str):
-      print(f"Observing {collection} collection for changes")
-      return self.database.child(collection).stream(self.onChange)
+        print(f"Observing {collection} collection for changes")
+        return self.database.child(collection).stream(self.onChange)
+        
+
 
     # onChange will handle responses from the stream when data is updated
     # in the database. This will then call the MusicPlayer instance methods
@@ -43,6 +48,10 @@ class DatabaseInteractor:
                 case Action.PREV.value:
                     self.player.prev()
 
+            time.sleep(1)
+            self.updatePlayerState()
+
+            
     def syncSongLibrary(self):
         localMusic = self.discoverLocalMusic()
         databaseMusic = self.getDatabaseMusic()
@@ -64,10 +73,34 @@ class DatabaseInteractor:
 
         self.database.child("simulatedDevices").child("songList").set(songList)
         self.player.setTrackList(songList)
+        self.tracklist = songList
 
     def updateDeviceStatus(self, status):
         self.database.child("simulatedDevices").child("deviceStatus").set(status)
+        self.database.child("simulatedDevices").child("playerState").set({
+                "state": "Stopped",
+                "currentTrack": {"artist": "", "track": ""}
+            })
 
+    def updatePlayerState(self):
+        states = vlc.State._enum_names_
+        currentState = self.player.listPlayer.get_state()
+        playerState = states[currentState.value]
+        newTrack: vlc.Media = self.player.mediaPlayer.get_media()
+
+        if newTrack:
+            artist = newTrack.get_meta(vlc.Meta.Artist)
+            song = newTrack.get_meta(vlc.Meta.Title)
+
+        currentTrack = {"artist": "", "track": ""} if(playerState == "Stopped") else {"artist": artist, "track": song}
+
+        stateObject = {
+            "state": playerState,
+            "currentTrack": currentTrack
+        }
+
+        self.database.child("simulatedDevices").child("playerState").set(stateObject)
+        
     def discoverLocalMusic(self):
         localMusic: list = []
         for file in os.listdir('music'):
@@ -84,7 +117,10 @@ class DatabaseInteractor:
     def getDatabaseMusic(self):
         databaseMusic = self.database.child("simulatedDevices").child("songList").get().val()
         return databaseMusic if type(databaseMusic) is list else list()
-
+    
+    def close(self):
+        self.player = None
+        self.database = None
 
 class Action(Enum):
     PLAY = "play"

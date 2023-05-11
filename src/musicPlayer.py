@@ -1,5 +1,6 @@
 import vlc
 import os
+import time
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3 
 
@@ -8,8 +9,9 @@ class MusicPlayer():
     musicDirectory = "music/"
 
     def __init__(self):
-        self.instance = vlc.Instance()
-        self.player: vlc.MediaListPlayer = self.instance.media_list_player_new()
+        self.listPlayer: vlc.MediaListPlayer = vlc.MediaListPlayer()
+        self.mediaPlayer: vlc.MediaPlayer = self.listPlayer.get_media_player()
+        self.instance: vlc.Instance = self.listPlayer.get_instance()
         self.tracklist: list = list()
 
     def play(self, trackId):
@@ -20,38 +22,38 @@ class MusicPlayer():
             for i, track in enumerate(self.tracklist):
                 if track["trackId"] == trackId:
                     trackIndex = i
-            self.player.play_item_at_index(trackIndex)
+            self.listPlayer.play_item_at_index(trackIndex)
         # If track is None and there is no current track loaded, the first track
         # of the list will play.
         # If track is None and there is a current track loaded that has been either
         # paused or stopped. The current track will resume playing. 
         # If the track is already playing, nothing will happen.
         else:
-            self.player.play()
+            self.listPlayer.play()
 
     # Pause playback of current track, nothing happens if no loaded track is playing.
     def pause(self):
-        self.player.pause()
+        self.listPlayer.pause()
 
     # Stop playback of current track, This will also move the progress of the currently
     # loaded song back to the start. Nothing happens if no song is loaded or playing.
     def stop(self):
-        self.player.stop()
+        self.listPlayer.stop()
 
     # nextResult will be -1 if next() is called on the final track in the list.
     # When -1 is returned, play the first track in the list.
     def next(self):
-        nextResult = self.player.next()
+        nextResult = self.listPlayer.next()
         if nextResult == -1:
-            self.player.play_item_at_index(0)
+            self.listPlayer.play_item_at_index(0)
 
     # Previous result will be -1 if prev() is called on the first track in the list.
     # When -1 is returned, play the last track in the list.
     def prev(self):
-        previousResult = self.player.previous()
+        previousResult = self.listPlayer.previous()
         if previousResult == -1:
             lastIndex = len(self.tracklist) - 1
-            self.player.play_item_at_index(lastIndex)
+            self.listPlayer.play_item_at_index(lastIndex)
 
     # Creates vlc Media objects and adds them to a vlc MediaList.
     # The created vlc MediaList is then assigned to the vlc MediaListPlayer.
@@ -67,4 +69,9 @@ class MusicPlayer():
                 if track["song"] == trackdata["title"] and track["artist"] == trackdata["artist"]:
                     media = self.instance.media_new(trackpath)
                     mediaList.add_media(media)
-        self.player.set_media_list(mediaList)
+        self.listPlayer.set_media_list(mediaList)
+
+    def close(self):
+        self.mediaPlayer = None
+        self.listPlayer = None
+        self.instance = None

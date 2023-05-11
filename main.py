@@ -3,7 +3,7 @@ from src.databaseInteractor import DatabaseInteractor
 from src.musicPlayer import MusicPlayer
 import traceback
 import signal
-import sys
+import time
 
 def main():
 
@@ -20,27 +20,27 @@ def main():
     firebase = pyrebase.initialize_app(config)
 
     database = firebase.database()
+       
+    musicPlayer = MusicPlayer()
 
-    player = MusicPlayer()
-
-    interactor = DatabaseInteractor(database, player)
+    interactor = DatabaseInteractor(database, musicPlayer)
 
     dataStream = interactor.observe("simulatedDevices") # Runs in another thread
 
     def signal_handler(signal, frame):
-      print("signal handled")
+      print("Closing music player")
       interactor.updateDeviceStatus("offline")
       dataStream.close()
-      sys.exit(1)
+      interactor.close()
+      musicPlayer.close()
       
     signal.signal(signal.SIGINT, signal_handler)
 
-    # This is required so that the keyboard interrupt signal is caught by joining the
-    # thread with a timeout
-    dataStream.thread.join(5)
+    while(dataStream.thread.is_alive()):
+       time.sleep(0.1)
 
-  except Exception as e:
-     print(e)
+  except KeyboardInterrupt as e:
+     print("key")
      
 if __name__ == "__main__":
     main()
