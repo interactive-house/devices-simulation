@@ -37,7 +37,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
 
     while(dataStream.thread.is_alive()):
-       time.sleep(0.1)
+       time.sleep(1)
 
   except KeyboardInterrupt as e:
      print("key")

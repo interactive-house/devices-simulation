@@ -91,8 +91,12 @@ class DatabaseInteractor:
         if newTrack:
             artist = newTrack.get_meta(vlc.Meta.Artist)
             song = newTrack.get_meta(vlc.Meta.Title)
+            trackId = ""
+            for track in self.tracklist:
+                if track["artist"][0] == artist and track["song"][0] == song:
+                    trackId = track["trackId"]
 
-        currentTrack = {"artist": "", "track": ""} if(playerState == "Stopped") else {"artist": artist, "track": song}
+            currentTrack = {"artist": "", "track": "", "trackId": ""} if(playerState == "Stopped") else {"artist": artist, "track": song, "trackId": trackId}
 
         stateObject = {
             "state": playerState,
