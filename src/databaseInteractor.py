@@ -48,7 +48,7 @@ class DatabaseInteractor:
                 case Action.PREV.value:
                     self.player.prev()
 
-            time.sleep(1)
+            time.sleep(0.1)
             self.updatePlayerState()
 
             
