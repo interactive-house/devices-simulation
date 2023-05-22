@@ -40,10 +40,10 @@ clean-all: clean clean-doc
 	rm -rf .venv
 
 unittest:
-	 $(PYTHON) -m unittest discover . "*_test.py"
+	 $(PYTHON) -m unittest discover ./test "*_test.py"
 
 coverage:
-	coverage run -m unittest discover . "*_test.py"
+	coverage run -m unittest discover ./test "*_test.py"
 	coverage html
 	coverage report -m
 
