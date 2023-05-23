@@ -1,7 +1,9 @@
 ## devices-simulation
 # Music Player
 
-![Device Image](./images/device.png)
+![Music Player](https://github.com/interactive-house/devices-simulation/assets/78823882/10c0db08-961d-432a-99e3-f20cb66baacb)
+
+
 
 ## Table of Contents
 1. [Features](#features)
