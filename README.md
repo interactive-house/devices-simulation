@@ -45,7 +45,40 @@
 2. enter `. .venv/Scripts/activate`
 #### IOS/ Linux
 2. enter `. .venv/bin/activate`
+
 3. `make install`
+
+4. Add the following folders to the project.
+    - A music folder for the mp3 files
+       - Add mp3 files following the naming scheme: "ArtistName_-_SongName.mp3"
+    - A config folder for the ServiceAccount.json file
+
+
+5. Ensure the project path looks like this:
+
+```
+MusicPlayerSimulation/
+├── __pycache__/
+├── .venv/
+├── config/
+│   └── ServiceAccount.json
+├── music/
+│   ├── ArtistName_-_SongName.mp3
+│   └── ...
+├── schema/
+│   └── data.json
+├── src/
+│   ├── __pycache__/
+│   ├── databaseInteractor.py
+│   ├── musicPlayer.py
+│   └── testClient.py
+├── .gitingnore
+├── main.py
+├── Makefile
+├── README.md
+├── requirements.txt
+└── Usage.txt
+```
 
 ## Usage
 
