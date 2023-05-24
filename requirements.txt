@@ -1,3 +1,7 @@
 pyrebase4
 python-vlc
-mutag
+mutagen
+requests
+requests_toolbelt
+pylint
+watchdog
