@@ -7,7 +7,10 @@ from mutagen.easyid3 import EasyID3
 from .musicPlayer import MusicPlayer
 import vlc
 
-
+"""
+Database interactor class with init function to define the object.
+Arguments: database object, Music player object.
+"""
 class DatabaseInteractor:
     def __init__(self, database, player):
         self.database = database
@@ -35,7 +38,7 @@ class DatabaseInteractor:
             dataKeys = data.keys()
             type = data["type"] if "type" in dataKeys else None
             trackId = data["trackId"] if "trackId" in dataKeys else None
-
+            #  Based on the action value, call the corresponding function.
             match type:
                 case Action.PLAY.value:
                     self.player.play(trackId)
@@ -49,8 +52,11 @@ class DatabaseInteractor:
                     self.player.prev()
 
             time.sleep(0.1)
+            # Update player state.
             self.updatePlayerState()
 
+    # Use discover local music function to get local music list.
+    # Get database music by calling the function.
     def syncSongLibrary(self):
         localMusic = self.discoverLocalMusic()
         databaseMusic = self.getDatabaseMusic()
@@ -71,9 +77,11 @@ class DatabaseInteractor:
                 songList.append(trackData)
 
         self.database.child("simulatedDevices").child("songList").set(songList)
+        # set track list by sending in the songList.
         self.player.setTrackList(songList)
         self.tracklist = songList
 
+    # Update device status and player state to initial state with real time database.
     def updateDeviceStatus(self, status):
         self.database.child("simulatedDevices").child(
             "deviceStatus").set(status)
@@ -82,6 +90,7 @@ class DatabaseInteractor:
             "currentTrack": {"artist": "", "track": ""}
         })
 
+    # Update player state based on VLC player media state with real time datatbase.
     def updatePlayerState(self):
         states = vlc.State._enum_names_
         currentState = self.player.listPlayer.get_state()
@@ -107,6 +116,7 @@ class DatabaseInteractor:
         self.database.child("simulatedDevices").child(
             "playerState").set(stateObject)
 
+    # Discover music file that ends with .mp3 extension, then append to localMusic list.
     def discoverLocalMusic(self):
         localMusic: list = []
         for file in os.listdir('music'):
@@ -120,11 +130,13 @@ class DatabaseInteractor:
                 localMusic.append(data)
         return localMusic
 
+    # Get database music song list.
     def getDatabaseMusic(self):
         databaseMusic = self.database.child(
             "simulatedDevices").child("songList").get().val()
         return databaseMusic if type(databaseMusic) is list else list()
 
+    # Close the player and database.
     def close(self):
         self.player = None
         self.database = None
