@@ -2,10 +2,11 @@ from enum import Enum
 import os
 import time
 from uuid import uuid4
-from mutagen.mp3 import MP3  
+from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
 from .musicPlayer import MusicPlayer
 import vlc
+
 
 class DatabaseInteractor:
     def __init__(self, database, player):
@@ -19,16 +20,15 @@ class DatabaseInteractor:
     def observe(self, collection: str):
         print(f"Observing {collection} collection for changes")
         return self.database.child(collection).stream(self.onChange)
-        
-
 
     # onChange will handle responses from the stream when data is updated
     # in the database. This will then call the MusicPlayer instance methods
     # depending on what data has changed.
+
     def onChange(self, message):
-        
+
         # Check if the event type is patch, which is an update
-        if(message["path"] == "/action"):
+        if (message["path"] == "/action"):
             print(message)
             # Get the updated field and value
             data = message["data"]
@@ -51,7 +51,6 @@ class DatabaseInteractor:
             time.sleep(0.1)
             self.updatePlayerState()
 
-            
     def syncSongLibrary(self):
         localMusic = self.discoverLocalMusic()
         databaseMusic = self.getDatabaseMusic()
@@ -76,11 +75,12 @@ class DatabaseInteractor:
         self.tracklist = songList
 
     def updateDeviceStatus(self, status):
-        self.database.child("simulatedDevices").child("deviceStatus").set(status)
+        self.database.child("simulatedDevices").child(
+            "deviceStatus").set(status)
         self.database.child("simulatedDevices").child("playerState").set({
-                "state": "Stopped",
-                "currentTrack": {"artist": "", "track": ""}
-            })
+            "state": "Stopped",
+            "currentTrack": {"artist": "", "track": ""}
+        })
 
     def updatePlayerState(self):
         states = vlc.State._enum_names_
@@ -96,35 +96,39 @@ class DatabaseInteractor:
                 if track["artist"][0] == artist and track["song"][0] == song:
                     trackId = track["trackId"]
 
-            currentTrack = {"artist": "", "track": "", "trackId": ""} if(playerState == "Stopped") else {"artist": artist, "track": song, "trackId": trackId}
+            currentTrack = {"artist": "", "track": "", "trackId": ""} if (
+                playerState == "Stopped") else {"artist": artist, "track": song, "trackId": trackId}
 
         stateObject = {
             "state": playerState,
             "currentTrack": currentTrack
         }
 
-        self.database.child("simulatedDevices").child("playerState").set(stateObject)
-        
+        self.database.child("simulatedDevices").child(
+            "playerState").set(stateObject)
+
     def discoverLocalMusic(self):
         localMusic: list = []
         for file in os.listdir('music'):
             if file.endswith(".mp3"):
                 trackpath = f"./music/{file}"
-                trackData = MP3(trackpath, ID3 = EasyID3)
+                trackData = MP3(trackpath, ID3=EasyID3)
                 data = {
                     "artist": trackData["artist"],
                     "song": trackData["title"]
                 }
                 localMusic.append(data)
         return localMusic
-    
+
     def getDatabaseMusic(self):
-        databaseMusic = self.database.child("simulatedDevices").child("songList").get().val()
+        databaseMusic = self.database.child(
+            "simulatedDevices").child("songList").get().val()
         return databaseMusic if type(databaseMusic) is list else list()
-    
+
     def close(self):
         self.player = None
         self.database = None
+
 
 class Action(Enum):
     PLAY = "play"
@@ -132,8 +136,3 @@ class Action(Enum):
     STOP = "stop"
     NEXT = "next"
     PREV = "prev"
-
-
-
-
-
