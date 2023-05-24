@@ -10,6 +10,7 @@ from watchdog.observers import Observer
 
 def main():
 
+    # Configure real time database.
     try:
         config = {
             "apiKey": "apiKey",
@@ -31,6 +32,7 @@ def main():
         dataStream = interactor.observe(
             "simulatedDevices")  # Runs in another thread
 
+        # Handle device status to offline by receiving a signal and frame, close datastream, interactor and music player.
         def signal_handler(signal, frame):
             print("Closing music player")
             interactor.updateDeviceStatus("offline")
